@@ -1,0 +1,19 @@
+micronaut:
+  application:
+    name: caLlamity
+  server:
+    port: 9999
+  mcp:
+    server:
+      transport: HTTP
+      endpoint: /mcp
+      info:
+        name: caLlamity
+        version: 1.0.0
+  http:
+    client:
+      read-timeout: 300s
+
+ollama:
+  base-url: http://localhost:11434
+  api-key: ollama
