@@ -14,8 +14,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -212,7 +214,14 @@ public class InstanceManager {
                     transcript.append("│  ").append(responseA.replace("\n", "\n│  ")).append("\n");
                     transcript.append("└─────────────────────────────────────────────\n\n");
 
-                    return runTurnLoop(instanceA, instanceB, responseA, 2, limit, transcript)
+                    Set<String> doneMembers = new HashSet<>();
+                    if (responseA.contains("[DONE]") || responseA.contains("[FINISHED]")) {
+                        doneMembers.add(instanceA);
+                    }
+
+                    Set<String> requiredMembers = Set.of(instanceA, instanceB);
+
+                    return runTurnLoop(instanceA, instanceB, responseA, 2, limit, transcript, doneMembers, requiredMembers)
                             .map(finalTranscript -> {
                                 long endTokensA = objA.getTotalTokensUsed();
                                 long endTokensB = objB.getTotalTokensUsed();
@@ -233,8 +242,8 @@ public class InstanceManager {
                 });
     }
 
-    private Mono<String> runTurnLoop(String currentSender, String currentReceiver, String lastMessage, int currentTurn, int maxTurns, StringBuilder transcript) {
-        if (currentTurn > maxTurns || lastMessage.contains("[DONE]") || lastMessage.contains("[FINISHED]")) {
+    private Mono<String> runTurnLoop(String currentSender, String currentReceiver, String lastMessage, int currentTurn, int maxTurns, StringBuilder transcript, Set<String> doneMembers, Set<String> requiredMembers) {
+        if (currentTurn > maxTurns || doneMembers.containsAll(requiredMembers)) {
             transcript.append("✔ Autonomous collaboration completed at Turn ").append(currentTurn - 1).append(".\n");
             return Mono.just(transcript.toString());
         }
@@ -245,7 +254,16 @@ public class InstanceManager {
                     transcript.append("│  ").append(nextMessage.replace("\n", "\n│  ")).append("\n");
                     transcript.append("└─────────────────────────────────────────────\n\n");
 
-                    return runTurnLoop(currentReceiver, currentSender, nextMessage, currentTurn + 1, maxTurns, transcript);
+                    if (nextMessage.contains("[DONE]") || nextMessage.contains("[FINISHED]")) {
+                        doneMembers.add(currentReceiver);
+                    }
+
+                    if (doneMembers.containsAll(requiredMembers)) {
+                        transcript.append("✔ Autonomous collaboration completed at Turn ").append(currentTurn).append(".\n");
+                        return Mono.just(transcript.toString());
+                    }
+
+                    return runTurnLoop(currentReceiver, currentSender, nextMessage, currentTurn + 1, maxTurns, transcript, doneMembers, requiredMembers);
                 });
     }
 }

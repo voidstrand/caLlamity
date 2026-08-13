@@ -109,6 +109,9 @@ Add the following to your agent or IDE MCP configuration (e.g. `~/.gemini/config
 
 *NOTE:* only models already downloaded to your Ollama instance will be available to use. You can pull models with the pull command, e.g. `ollama pull llama3.2:1b`.
 
+### 2. Generate a jury of 5 different temperature models to name a volcano
+- **Prompt** Create 5 instances of llama3.2:1b with different temperatures and different names.  have them collaborate to come up with a name for a new Volcano discovered in Denver, Colorado.  Please indicate who chose the winning name and how many tokens were consumed by each.
+
 ---
 
 ## Architecture Documentation
