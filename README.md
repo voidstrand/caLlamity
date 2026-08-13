@@ -88,7 +88,7 @@ Add the following to your agent or IDE MCP configuration (e.g. `~/.gemini/config
 ## Recommended Use Cases & Orchestration Patterns
 
 ### 1. Zero-Cost Autonomous Peer Collaboration (`start_peer_collaboration`)
-- **Use Case**: Have two specialized local models (e.g. `DocWriter` and `CodeReviewer`, or `Herman` and `Ethel`) execute multi-turn brainstorming, story writing, or code review sessions completely server-side.
+- **Use Case**: Have multiple local models (e.g. `DocWriter` and `CodeReviewer`, or `Herman` and `Ethel` and `Maude`) execute multi-turn brainstorming, story writing, or code review sessions completely server-side.
 - **Benefit**: Antigravity / Client agent token burn is **0 tokens** during intermediate turns. Only the final consolidated output is returned.
 
 ### 2. Multi-Model Task Delegation & Roleplay
@@ -100,6 +100,14 @@ Add the following to your agent or IDE MCP configuration (e.g. `~/.gemini/config
 
 ### 4. Live Memory & Token Observability (`get_metrics`)
 - **Use Case**: Monitor exact prompt and completion tokens used per instance, check VRAM/memory allocation via native Ollama `/api/ps` integration, and terminate unused instances to free up GPU resources.
+
+---
+## Example(s)
+
+### 1. Brainstorm band names for a Metallica cover band.
+- **Prompt** Create an instance of llama3.2:1b with 2048 max output tokens and a temperature of .7 named Alpha, one instance of codellama-local:latest with 1024 max output tokens and a temperature of .3 named Beta, and one instance of llama3.2:1b with 4096 max output tokens and a temperature of 1.3 named Gamma.  ask them to start a peer collaboration to generate a list of 10 original band name proposals for a new Metallica cover band.  Please include tokens spent from the collaboration and who ended up proposing the top 10 names selected.  When the entire collaboration is done, and the result has been received, please have all 3 instances self-terminate.
+
+*NOTE:* only models already downloaded to your Ollama instance will be available to use. You can pull models with the pull command, e.g. `ollama pull llama3.2:1b`.
 
 ---
 
@@ -119,5 +127,3 @@ This project is open-source, entirely permissive, and released under the [MIT Li
 
 ### Contact
 Questions regarding the project should be sent to **[voidstrand@voidstrand.com](mailto:voidstrand@voidstrand.com)**.
-
-
